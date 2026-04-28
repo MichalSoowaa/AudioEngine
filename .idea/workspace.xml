@@ -4,13 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3f84d51c-af6e-4afe-8568-4753683d8dde" name="Changes" comment="Implemented wav parser">
-      <change afterPath="$PROJECT_DIR$/effects/echo.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/effects/normalize.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/effects/registry.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/effects/reverse.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/effects/volume.py" afterDir="false" />
+    <list default="true" id="3f84d51c-af6e-4afe-8568-4753683d8dde" name="Changes" comment="Added effects: volume, reverse, normalize">
+      <change afterPath="$PROJECT_DIR$/effects/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/processing/pipeline.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_21_04_2026_01_39_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_21_04_2026_01_39__Changes_.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/wav.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/wav.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/effects/echo.py" beforeDir="false" afterPath="$PROJECT_DIR$/effects/echo.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/effects/normalize.py" beforeDir="false" afterPath="$PROJECT_DIR$/effects/normalize.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/samp1_output.wav" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,7 +22,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="19" />
+    <option name="cachedIndexableFilesCount" value="20" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -117,7 +121,15 @@
       <option name="project" value="LOCAL" />
       <updated>1776980542519</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Added effects: volume, reverse, normalize">
+      <option name="closed" value="true" />
+      <created>1777073389264</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1777073389266</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -137,6 +149,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="test commit" />
     <MESSAGE value="Implemented wav parser" />
-    <option name="LAST_COMMIT_MESSAGE" value="Implemented wav parser" />
+    <MESSAGE value="Added effects: volume, reverse, normalize" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added effects: volume, reverse, normalize" />
   </component>
 </project>

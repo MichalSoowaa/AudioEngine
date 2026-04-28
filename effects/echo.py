@@ -1,3 +1,4 @@
+from core.audio import Audio
 from effects.registry import register_effect
 
 @register_effect("echo")
@@ -8,3 +9,6 @@ def echo(audio, delay_ms: int = 300, decay: float = 0.5):
 
     for i in range(delay_samples, len(audio.samples)):
         new_samples[i] += int(decay * audio.samples[i - delay_samples])
+        new_samples[i] = max(-32768, min(32767, new_samples[i]))
+
+    return Audio(new_samples, audio.sample_rate, audio.num_channels, audio.sample_width)
