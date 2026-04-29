@@ -1,6 +1,10 @@
 from effects.registry import get_effect
+from processing.parallel import apply_effect_parallel
 
-def apply_effect(audio, effect, **params):
+def apply_effect(audio, effect, parallel = False, **params):
+    if parallel:
+        return apply_effect_parallel(audio, effect, **params)
+
     effect = get_effect(effect)
 
     if not effect:
@@ -8,7 +12,7 @@ def apply_effect(audio, effect, **params):
 
     return effect(audio, **params)
 
-def apply_chain(audio, chain):
+def apply_chain(audio, chain, parallel = False):
     """
     chain = [
         ("volume", {"factor": 2.0}),
@@ -19,6 +23,6 @@ def apply_chain(audio, chain):
     result = audio
 
     for effect, params in chain:
-        result = apply_effect(result, effect, **params)
+        result = apply_effect(result, effect, parallel, **params)
 
     return result

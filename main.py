@@ -13,6 +13,6 @@ if __name__ == "__main__":
         ("echo", {"delay_ms": 300, "decay": 0.5}),
     ]
 
-    processed = apply_chain(audio, chain)
+    processed = apply_chain(audio, chain, parallel = True)
 
     save_wav("samp1_output.wav", processed)
