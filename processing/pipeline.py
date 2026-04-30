@@ -1,18 +1,24 @@
 from effects.registry import get_effect
 from processing.parallel import apply_effect_parallel
 
-def apply_effect(audio, effect, parallel = False, **params):
-    if parallel:
-        return apply_effect_parallel(audio, effect, **params)
+def apply_effect(audio, effect, parallel=True, **params):
+    effect_data = get_effect(effect)
 
-    effect = get_effect(effect)
-
-    if not effect:
+    if not effect_data:
         raise ValueError(f"Effect '{effect}' not found")
 
-    return effect(audio, **params)
+    if not parallel:
+        func = effect_data["func"]
+        preprocess = effect_data["preprocess"]
 
-def apply_chain(audio, chain, parallel = False):
+        if preprocess:
+            params.update(preprocess(audio, **params))
+
+        return func(audio, **params)
+
+    return apply_effect_parallel(audio, effect_data, **params)
+
+def apply_chain(audio, chain, parallel=True):
     """
     chain = [
         ("volume", {"factor": 2.0}),

@@ -1,44 +1,19 @@
 from core.audio import Audio
 from effects.registry import register_effect
 
-@register_effect("normalize")
-def normalize(audio):
+def normalize_preprocess(audio, **kwargs):
     if not audio.samples:
-        return audio
+        raise ValueError(f"This audio has no samples: {audio.samples}")
 
-    # if audio.sample_width == 1:
-    #     # 8-bit, center is 128
-    #     centered = [s - 128 for s in audio.samples]
-    #     max_val = max(abs(s) for s in centered)
-    #
-    #     if max_val == 0:
-    #         return audio
-    #
-    #     target = 127
-    #     factor = target / max_val
-    #     new_samples = [int(s * factor) + 128 for s in centered]
-
-    # elif audio.sample_width == 2:
-    #     # 16-bit
-    #     max_val = max(abs(s) for s in audio.samples)
-    #
-    #     if max_val == 0:
-    #         return audio
-    #
-    #     target = 32767
-    #     factor = target / max_val
-    #     new_samples = [int(s * factor) for s in audio.samples]
-
-    if audio.sample_width not in (8, 16):
+    if audio.sample_width not in (1, 2):
         raise ValueError(f"Invalid sample width: {audio.sample_width}")
 
     max_val = max(abs(s) for s in audio.samples)
-
-    if max_val == 0:
-        return audio
-
     target = 32767
-    factor = target / max_val
-    new_samples = [int(s * factor) for s in audio.samples]
 
+    return {"factor": target / max_val if max_val != 0 else 1}
+
+@register_effect("normalize", mode="parallel", preprocess=normalize_preprocess)
+def normalize(audio, factor=1.0):
+    new_samples = [max(-32768, min(32767, int(s * factor))) for s in audio.samples]
     return Audio(new_samples, audio.sample_rate, audio.num_channels, audio.sample_width)
