@@ -1,40 +1,25 @@
 from multiprocessing import Pool, cpu_count
 from core.audio import Audio
+from core.enums import ProcessingMode
 
 def process_full(args):
-    chunk, effect_func, params = args
-    return effect_func(chunk, **params).samples
+    chunk, effect_func, effect_context, user_params = args
+    return effect_func(chunk, effect_context, **user_params).samples
 
 def process_overlap(args):
-    audio, start, end, effect_func, overlap, params = args
+    audio, start, end, effect_func, effect_context, user_params = args
 
-    ext_start = max(0, start - overlap)
+    ext_start = max(0, start - effect_context.overlap)
     ext_end = end
     extended_samples = audio.samples[ext_start:ext_end]
 
     chunk = Audio(extended_samples, audio.sample_rate, audio.num_channels, audio.sample_width)
-    processed = effect_func(chunk, **params).samples
+    processed = effect_func(chunk, effect_context, **user_params).samples
 
     trim_start = start - ext_start
     trim_end = trim_start + (end - start)
 
     return processed[trim_start:trim_end]
-
-# def split_audio(audio, num_chunks):
-#     length = len(audio.samples)
-#     chunk_size = length // num_chunks
-#     chunks = []
-#
-#     for i in range(num_chunks):
-#         start = i * chunk_size
-#         end = length if i == num_chunks - 1 else start + chunk_size
-#
-#         chunk_samples = audio.samples[start:end]
-#         chunk = Audio(chunk_samples, audio.sample_rate, audio.num_channels, audio.sample_width)
-#
-#         chunks.append(chunk)
-#
-#     return chunks
 
 def split_indices(length, num_chunks):
     chunk_size = length // num_chunks
@@ -55,40 +40,40 @@ def merge_chunks(chunks):
 
     return merged
 
-def apply_effect_parallel(audio, effect_data, **params):
+def apply_effect_parallel(audio, effect_data, **user_params):
     mode = effect_data['mode']
     func = effect_data['func']
     preprocess = effect_data['preprocess']
 
+    effect_context = None
+
     if preprocess:
-        extra = preprocess(audio, **params)
-        params.update(extra)
+        effect_context = preprocess(audio, **user_params)
 
-    if mode == "none":
-        return func(audio, **params)
+    if mode == ProcessingMode.NORMAL:
+        return func(audio, effect_context, **user_params)
 
-    num_workers = cpu_count()
+    num_workers = min(cpu_count(), len(audio.samples))
 
     indices = split_indices(len(audio.samples), num_workers)
 
     with Pool(num_workers) as pool:
-        if mode == "parallel":
+        if mode == ProcessingMode.PARALLEL:
             chunks = [
                 Audio(audio.samples[start:end], audio.sample_rate, audio.num_channels, audio.sample_width)
                 for start, end in indices
             ]
 
             args = [
-                (chunk, func, params)
+                (chunk, func, effect_context, user_params)
                 for chunk in chunks
             ]
 
             results = pool.map(process_full, args)
-        elif mode == "overlap":
-            overlap = params.pop('overlap')
+        elif mode == ProcessingMode.OVERLAP:
 
             args = [
-                (audio, start, end, func, overlap, params)
+                (audio, start, end, func, effect_context, user_params)
                 for start, end in indices
             ]
 

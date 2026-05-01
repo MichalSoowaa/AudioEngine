@@ -1,8 +1,10 @@
 from core.audio import Audio
+from core.preprocess import EffectContext
 from effects.registry import register_effect
+from core.enums import ProcessingMode
 
-@register_effect("volume", mode="parallel")
-def volume(audio, factor: float = 1.0):
+@register_effect("volume", mode=ProcessingMode.PARALLEL)
+def volume(audio, context: EffectContext=None, factor: float = 1.0):
     new_samples = []
 
     for sample in audio.samples:

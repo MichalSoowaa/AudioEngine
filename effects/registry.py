@@ -1,6 +1,8 @@
+from core.enums import ProcessingMode
+
 EFFECTS = {}
 
-def register_effect(name, mode="parallel", overlap=0, preprocess=None):
+def register_effect(name, mode=ProcessingMode.PARALLEL, overlap=0, preprocess=None):
     def decorator(func):
         EFFECTS[name] = {
             "func": func,

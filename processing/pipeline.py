@@ -1,7 +1,7 @@
 from effects.registry import get_effect
 from processing.parallel import apply_effect_parallel
 
-def apply_effect(audio, effect, parallel=True, **params):
+def apply_effect(audio, effect, parallel=True, **user_params):
     effect_data = get_effect(effect)
 
     if not effect_data:
@@ -10,13 +10,14 @@ def apply_effect(audio, effect, parallel=True, **params):
     if not parallel:
         func = effect_data["func"]
         preprocess = effect_data["preprocess"]
+        effect_context = None
 
         if preprocess:
-            params.update(preprocess(audio, **params))
+            effect_context = preprocess(audio, **user_params)
 
-        return func(audio, **params)
+        return func(audio, effect_context, **user_params)
 
-    return apply_effect_parallel(audio, effect_data, **params)
+    return apply_effect_parallel(audio, effect_data, **user_params)
 
 def apply_chain(audio, chain, parallel=True):
     """
@@ -28,7 +29,7 @@ def apply_chain(audio, chain, parallel=True):
 
     result = audio
 
-    for effect, params in chain:
-        result = apply_effect(result, effect, parallel, **params)
+    for effect, user_params in chain:
+        result = apply_effect(result, effect, parallel, **user_params)
 
     return result

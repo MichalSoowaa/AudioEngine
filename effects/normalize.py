@@ -1,5 +1,13 @@
+from dataclasses import dataclass
+
 from core.audio import Audio
+from core.enums import ProcessingMode
+from core.preprocess import EffectContext
 from effects.registry import register_effect
+
+@dataclass
+class NormalizeContext(EffectContext):
+    factor: float = 1.0
 
 def normalize_preprocess(audio, **kwargs):
     if not audio.samples:
@@ -11,9 +19,9 @@ def normalize_preprocess(audio, **kwargs):
     max_val = max(abs(s) for s in audio.samples)
     target = 32767
 
-    return {"factor": target / max_val if max_val != 0 else 1}
+    return NormalizeContext(factor = target / max_val if max_val != 0 else 1)
 
-@register_effect("normalize", mode="parallel", preprocess=normalize_preprocess)
-def normalize(audio, factor=1.0):
-    new_samples = [max(-32768, min(32767, int(s * factor))) for s in audio.samples]
+@register_effect("normalize", mode=ProcessingMode.PARALLEL, preprocess=normalize_preprocess)
+def normalize(audio, context: NormalizeContext=None, **kwargs):
+    new_samples = [max(-32768, min(32767, int(s * context.factor))) for s in audio.samples]
     return Audio(new_samples, audio.sample_rate, audio.num_channels, audio.sample_width)
