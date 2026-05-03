@@ -4,7 +4,7 @@ from effects.registry import register_effect
 from core.enums import ProcessingMode
 
 @register_effect("volume", mode=ProcessingMode.PARALLEL)
-def volume(audio, context: EffectContext=None, factor: float = 1.0):
+def volume(audio: Audio, context: EffectContext=None, factor: float = 1.0):
     new_samples = []
 
     for sample in audio.samples:

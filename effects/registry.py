@@ -1,4 +1,8 @@
+from core.audio import Audio
 from core.enums import ProcessingMode
+import inspect
+
+from core.preprocess import EffectContext
 
 EFFECTS = {}
 
@@ -18,3 +22,40 @@ def get_effect(name):
 
 def list_effects():
     return list(EFFECTS.keys())
+
+def get_effect_params(name):
+    effect = EFFECTS.get(name)
+
+    if not effect:
+        return {}
+
+    func = effect["func"]
+
+    sig = inspect.signature(func)
+    params = {}
+
+    for param in sig.parameters.values():
+        if param.annotation is Audio:
+            continue
+
+        if (param.annotation is not inspect.Parameter.empty
+        and inspect.isclass(param.annotation)
+        and issubclass(param.annotation, EffectContext)):
+            continue
+
+        default = None
+
+        if param.default is not inspect.Parameter.empty:
+            default = param.default
+
+        params[param.name] = {
+            "default": default,
+            "has_default": param.default is not inspect.Parameter.empty,
+            "type": (
+                param.annotation
+                if param.annotation is not inspect.Parameter.empty
+                else (type(default) if default is not None else str)
+            )
+        }
+
+    return params

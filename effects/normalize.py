@@ -22,6 +22,6 @@ def normalize_preprocess(audio, **kwargs):
     return NormalizeContext(factor = target / max_val if max_val != 0 else 1)
 
 @register_effect("normalize", mode=ProcessingMode.PARALLEL, preprocess=normalize_preprocess)
-def normalize(audio, context: NormalizeContext=None, **kwargs):
+def normalize(audio: Audio, context: NormalizeContext=None):
     new_samples = [max(-32768, min(32767, int(s * context.factor))) for s in audio.samples]
     return Audio(new_samples, audio.sample_rate, audio.num_channels, audio.sample_width)
