@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from core.audio import Audio
+from core.audio import Audio, clamp
 from core.enums import ProcessingMode
 from core.preprocess import EffectContext
 from effects.registry import register_effect
@@ -23,5 +23,6 @@ def normalize_preprocess(audio, **kwargs):
 
 @register_effect("normalize", mode=ProcessingMode.PARALLEL, preprocess=normalize_preprocess)
 def normalize(audio: Audio, context: NormalizeContext=None):
-    new_samples = [max(-32768, min(32767, int(s * context.factor))) for s in audio.samples]
+    new_samples = [clamp(int(s * context.factor)) for s in audio.samples]
+
     return Audio(new_samples, audio.sample_rate, audio.num_channels, audio.sample_width)

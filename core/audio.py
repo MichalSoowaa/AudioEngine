@@ -1,3 +1,9 @@
+INT16_MIN = -32768
+INT16_MAX = 32767
+
+def clamp(value: int) -> int:
+    return max(INT16_MIN, min(INT16_MAX, value))
+
 class Audio:
     def __init__(self, samples, sample_rate, num_channels=1, sample_width=2):
         self.samples = samples

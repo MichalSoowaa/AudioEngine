@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from core.audio import Audio
+from core.audio import Audio, clamp
 from core.enums import ProcessingMode
 from core.preprocess import EffectContext
 from effects.registry import register_effect
@@ -19,7 +19,6 @@ def echo(audio: Audio, context: EchoContext=None, delay_ms: int=300, decay: floa
     new_samples  = audio.samples.copy()
 
     for i in range(delay_samples, len(audio.samples)):
-        new_samples[i] += int(decay * audio.samples[i - delay_samples])
-        new_samples[i] = max(-32768, min(32767, new_samples[i]))
+        new_samples[i] = clamp(new_samples[i] + int(decay * audio.samples[i - delay_samples]))
 
     return Audio(new_samples, audio.sample_rate, audio.num_channels, audio.sample_width)

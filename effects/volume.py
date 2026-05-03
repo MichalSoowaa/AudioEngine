@@ -1,4 +1,4 @@
-from core.audio import Audio
+from core.audio import Audio, clamp
 from core.preprocess import EffectContext
 from effects.registry import register_effect
 from core.enums import ProcessingMode
@@ -8,6 +8,6 @@ def volume(audio: Audio, context: EffectContext=None, factor: float = 1.0):
     new_samples = []
 
     for sample in audio.samples:
-        new_samples.append(int(sample * factor))
+        new_samples.append(clamp(int(sample * factor)))
 
     return Audio(new_samples, audio.sample_rate, audio.num_channels, audio.sample_width)

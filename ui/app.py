@@ -55,6 +55,7 @@ class AudioApp:
             return
 
         self.audio = load_wav(path)
+        self.draw_waveform()
         self.status.config(text=f"Loaded: {path}")
 
     def save_file(self):
@@ -77,7 +78,7 @@ class AudioApp:
         for widget in self.params_frame.winfo_children():
             widget.destroy()
 
-        self.params_entries.clear()
+        self.param_widgets.clear()
 
         params = get_effect_params(effect)
 
@@ -172,6 +173,7 @@ class AudioApp:
 
             if status == "success":
                 self.audio = data
+                self.draw_waveform()
                 self.status.config(text="Done")
                 self.apply_button.config(state="normal")
             elif status == "error":
@@ -180,3 +182,29 @@ class AudioApp:
         except queue.Empty:
             self.root.after(100, self.check_queue)
 
+    def draw_waveform(self):
+        self.canvas.delete("all")
+
+        if not self.audio or not self.audio.samples:
+            return
+
+        samples = self.audio.samples
+
+        width = int(self.canvas["width"])
+        height = int(self.canvas["height"])
+        mid_y = height // 2
+        step = max(1, len(samples) // width)
+
+        for x in range(width):
+            idx = x * step
+            if idx >= len(samples):
+                break
+
+            sample = samples[idx]
+
+            # normalize (-32768..32767 -> -1..1)
+            norm = sample / 32768
+
+            y = int(mid_y - norm * mid_y)
+
+            self.canvas.create_line(x, mid_y, x, y, fill="lime")
