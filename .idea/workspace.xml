@@ -4,15 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3f84d51c-af6e-4afe-8568-4753683d8dde" name="Changes" comment="Added effect contexts,&#10;added enums for processing modes">
-      <change afterPath="$PROJECT_DIR$/ui/app.py" afterDir="false" />
+    <list default="true" id="3f84d51c-af6e-4afe-8568-4753683d8dde" name="Changes" comment="Added simple ui (tkinter)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/effects/echo.py" beforeDir="false" afterPath="$PROJECT_DIR$/effects/echo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/effects/normalize.py" beforeDir="false" afterPath="$PROJECT_DIR$/effects/normalize.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/effects/registry.py" beforeDir="false" afterPath="$PROJECT_DIR$/effects/registry.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/effects/reverse.py" beforeDir="false" afterPath="$PROJECT_DIR$/effects/reverse.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/effects/volume.py" beforeDir="false" afterPath="$PROJECT_DIR$/effects/volume.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui/app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,7 +14,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="31" />
+    <option name="cachedIndexableFilesCount" value="32" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -161,7 +155,15 @@
       <option name="project" value="LOCAL" />
       <updated>1777671518122</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Added simple ui (tkinter)">
+      <option name="closed" value="true" />
+      <created>1777822320012</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1777822320012</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -186,6 +188,7 @@
     <MESSAGE value="Added multiprocessing" />
     <MESSAGE value="Added distinct processing modes (one-process, fully-parallel, overlap)" />
     <MESSAGE value="Added effect contexts,&#10;added enums for processing modes" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added effect contexts,&#10;added enums for processing modes" />
+    <MESSAGE value="Added simple ui (tkinter)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added simple ui (tkinter)" />
   </component>
 </project>

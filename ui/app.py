@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
+import threading
+import queue
 
 from core.wav import load_wav, save_wav
 from processing.pipeline import apply_chain
@@ -12,6 +14,7 @@ class AudioApp:
         self.root.title("Audio Editor")
         self.audio = None
         self.selected_effect = None
+        self.queue = queue.Queue()
         self.param_widgets = {}
         self.build_ui()
 
@@ -36,10 +39,14 @@ class AudioApp:
 
         self.params_entries = {}
 
-        tk.Button(self.root, text="Apply effect", command=self.apply_effect).pack()
+        self.apply_button = tk.Button(self.root, text="Apply effect", command=self.apply_effect)
+        self.apply_button.pack()
 
         self.status = tk.Label(self.root, text="Ready")
         self.status.pack()
+
+        self.canvas = tk.Canvas(self.root, width=800, height=200, bg="black")
+        self.canvas.pack(pady=10)
 
     def load_file(self):
         path = filedialog.askopenfilename(filetypes=[("WAV files", "*.wav")])
@@ -141,6 +148,35 @@ class AudioApp:
         self.status.config(text="Processing...")
 
         chain = [(self.selected_effect, params)]
-        self.audio = apply_chain(self.audio, chain, parallel=True)
+        #self.audio = apply_chain(self.audio, chain, parallel=True)
+        thread = threading.Thread(
+            target = self.process_audio,
+            args = (self.audio, chain),
+            daemon = True
+        )
+        self.apply_button.config(state="disabled")
+        thread.start()
 
-        self.status.config(text="Done")
+        self.root.after(100, self.check_queue)
+
+    def process_audio(self, audio, chain):
+        try:
+            result = apply_chain(audio, chain, parallel=True)
+            self.queue.put(("success", result))
+        except Exception as e:
+            self.queue.put(("error", str(e)))
+
+    def check_queue(self):
+        try:
+            status, data = self.queue.get_nowait()
+
+            if status == "success":
+                self.audio = data
+                self.status.config(text="Done")
+                self.apply_button.config(state="normal")
+            elif status == "error":
+                self.status.config(text="Error")
+                messagebox.showerror("Error", data)
+        except queue.Empty:
+            self.root.after(100, self.check_queue)
+
