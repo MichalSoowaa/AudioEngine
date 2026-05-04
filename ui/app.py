@@ -1,11 +1,12 @@
-import tkinter as tk
 from tkinter import filedialog, messagebox
-import threading
-import queue
-
 from core.wav import load_wav, save_wav
 from processing.pipeline import apply_chain
 from effects.registry import list_effects, get_effect_params
+import tkinter as tk
+import threading
+import queue
+import sounddevice as sd
+import numpy as np
 
 
 class AudioApp:
@@ -41,6 +42,9 @@ class AudioApp:
 
         self.apply_button = tk.Button(self.root, text="Apply effect", command=self.apply_effect)
         self.apply_button.pack()
+
+        tk.Button(frame_top, text="Start", command=self.play_audio).pack(side=tk.LEFT)
+        tk.Button(frame_top, text="Stop", command=self.stop_audio).pack(side=tk.LEFT)
 
         self.status = tk.Label(self.root, text="Ready")
         self.status.pack()
@@ -229,3 +233,25 @@ class AudioApp:
                 y_r = int(base - norm_r * (mid_y // 2))
 
                 self.canvas.create_line(x, base, x, y_r, fill="orange")
+
+    def audio_to_numpy(self):
+        samples = self.audio.samples
+        channels = self.audio.num_channels
+        arr = np.array(samples, dtype=np.int16)
+
+        if channels == 1:
+            return arr
+
+        return arr.reshape(-1, channels)
+
+    def play_audio(self):
+        if not self.audio:
+            return
+
+        data = self.audio_to_numpy()
+        data = data.astype(np.float32) / 32768.0
+
+        sd.play(data, samplerate=self.audio.sample_rate)
+
+    def stop_audio(self):
+        sd.stop()
