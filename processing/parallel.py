@@ -46,7 +46,7 @@ def apply_effect_parallel(audio, effect_data, **user_params):
 
     for ch_samples in channels:
         ch_audio = Audio(ch_samples, audio.sample_rate, 1, audio.sample_width)
-        processed = apply_effect_parallel(ch_audio, effect_data, **user_params)
+        processed = apply_effect_on_single_channel(ch_audio, effect_data, **user_params)
         processed_channels.append(processed.samples)
 
     merged_samples = merge_channels(processed_channels)

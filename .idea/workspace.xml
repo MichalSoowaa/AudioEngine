@@ -4,9 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3f84d51c-af6e-4afe-8568-4753683d8dde" name="Changes" comment="Added simple waveform display">
+    <list default="true" id="3f84d51c-af6e-4afe-8568-4753683d8dde" name="Changes" comment="Added playback function">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/audio.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/audio.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/effects/echo.py" beforeDir="false" afterPath="$PROJECT_DIR$/effects/echo.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/effects/reverse.py" beforeDir="false" afterPath="$PROJECT_DIR$/effects/reverse.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/processing/parallel.py" beforeDir="false" afterPath="$PROJECT_DIR$/processing/parallel.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ui/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui/app.py" afterDir="false" />
     </list>
@@ -16,7 +19,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="32" />
+    <option name="cachedIndexableFilesCount" value="36" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -208,7 +211,23 @@
       <option name="project" value="LOCAL" />
       <updated>1777851351024</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Added stereo handling">
+      <option name="closed" value="true" />
+      <created>1777901615792</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1777901615792</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Added playback function">
+      <option name="closed" value="true" />
+      <created>1777903369181</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1777903369181</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -236,6 +255,8 @@
     <MESSAGE value="Added simple ui (tkinter)" />
     <MESSAGE value="Added multithreading" />
     <MESSAGE value="Added simple waveform display" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added simple waveform display" />
+    <MESSAGE value="Added stereo handling" />
+    <MESSAGE value="Added playback function" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added playback function" />
   </component>
 </project>

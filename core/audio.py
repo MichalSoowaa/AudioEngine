@@ -27,13 +27,9 @@ def split_channels(audio: Audio):
     return channels
 
 def merge_channels(channels):
-    num_channels = len(channels)
-    length = len(channels[0])
-
     merged = []
 
-    for i in range(num_channels):
-        for j in range(length):
-            merged.append(channels[i][j])
+    for frame in zip(*channels):
+        merged.extend(frame)
 
     return merged

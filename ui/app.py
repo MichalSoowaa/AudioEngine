@@ -7,6 +7,7 @@ import threading
 import queue
 import sounddevice as sd
 import numpy as np
+import time
 
 
 class AudioApp:
@@ -15,8 +16,16 @@ class AudioApp:
         self.root.title("Audio Editor")
         self.audio = None
         self.selected_effect = None
-        self.queue = queue.Queue()
         self.param_widgets = {}
+
+        self.playing = False
+        self.paused = False
+        self.play_start_time = 0
+        self.pause_time = 0
+        self.play_obj = None
+
+        self.queue = queue.Queue()
+
         self.build_ui()
 
     def build_ui(self):
@@ -38,13 +47,16 @@ class AudioApp:
         self.params_frame = tk.Frame(self.root)
         self.params_frame.pack()
 
-        self.params_entries = {}
-
         self.apply_button = tk.Button(self.root, text="Apply effect", command=self.apply_effect)
         self.apply_button.pack()
 
-        tk.Button(frame_top, text="Start", command=self.play_audio).pack(side=tk.LEFT)
+        self.play_button = (tk.Button(frame_top, text="Play", command=self.play_audio))
+        self.play_button.pack(side=tk.LEFT)
+
         tk.Button(frame_top, text="Stop", command=self.stop_audio).pack(side=tk.LEFT)
+
+        tk.Button(frame_top, text="Resume", command=self.resume_audio).pack(side=tk.LEFT)
+        tk.Button(frame_top, text="Pause", command=self.pause_audio).pack(side=tk.LEFT)
 
         self.status = tk.Label(self.root, text="Ready")
         self.status.pack()
@@ -61,6 +73,7 @@ class AudioApp:
         self.audio = load_wav(path)
         self.draw_waveform()
         self.status.config(text=f"Loaded: {path}")
+        self.play_button.config(state="normal")
 
     def save_file(self):
         if not self.audio:
@@ -182,6 +195,7 @@ class AudioApp:
                 self.apply_button.config(state="normal")
             elif status == "error":
                 self.status.config(text="Error")
+                self.apply_button.config(state="normal")
                 messagebox.showerror("Error", data)
         except queue.Empty:
             self.root.after(100, self.check_queue)
@@ -198,7 +212,7 @@ class AudioApp:
         width = int(self.canvas["width"])
         height = int(self.canvas["height"])
         mid_y = height // 2
-        step = max(1, len(samples) // width)
+        step = max(1, len(samples) // width // 2)
 
         def get_sample(i, channel):
             index = i * channels + channel
@@ -219,20 +233,20 @@ class AudioApp:
 
                 y = int(mid_y - norm * mid_y)
 
-                self.canvas.create_line(x, mid_y, x, y, fill="lime")
+                self.canvas.create_line(x, mid_y, x, y, fill="lime", tags="waveform")
             else:
                 left = get_sample(i, 0)
                 norm_l = left / 32768
                 y_l = int((mid_y // 2) - norm_l * (mid_y // 2))
 
-                self.canvas.create_line(x, mid_y // 2, x, y_l, fill="cyan")
+                self.canvas.create_line(x, mid_y // 2, x, y_l, fill="cyan", tags="waveform")
 
                 right = get_sample(i, 1)
                 norm_r = right / 32768
                 base = mid_y + (mid_y // 2)
                 y_r = int(base - norm_r * (mid_y // 2))
 
-                self.canvas.create_line(x, base, x, y_r, fill="orange")
+                self.canvas.create_line(x, base, x, y_r, fill="orange", tags="waveform")
 
     def audio_to_numpy(self):
         samples = self.audio.samples
@@ -251,7 +265,63 @@ class AudioApp:
         data = self.audio_to_numpy()
         data = data.astype(np.float32) / 32768.0
 
+        self.playing = True
+        self.paused = False
+        self.play_start_time = time.time()
+
         sd.play(data, samplerate=self.audio.sample_rate)
+        self.update_cursor()
 
     def stop_audio(self):
         sd.stop()
+        self.playing = False
+        self.paused = False
+
+    def pause_audio(self):
+        if not self.playing or self.paused:
+            return
+
+        latency = sd.query_devices(sd.default.device['output'], 'output')['default_low_output_latency']
+
+        sd.stop()
+        self.paused = True
+        self.pause_time = time.time() - latency
+
+    def resume_audio(self):
+        if not self.paused:
+            return
+
+        elapsed = self.pause_time - self.play_start_time
+
+        data = self.audio_to_numpy()
+        data = data.astype(np.float32) / 32768.0
+
+        start_sample = int(elapsed * self.audio.sample_rate)
+        sliced = data[start_sample:]
+
+        sd.play(sliced, samplerate=self.audio.sample_rate)
+        self.play_start_time = time.time() - elapsed
+        self.paused = False
+
+        self.update_cursor()
+
+    def update_cursor(self):
+        if not self.playing or self.paused:
+            return
+
+        elapsed = time.time() - self.play_start_time
+        total_duration = len(self.audio.samples) / self.audio.sample_rate / self.audio.num_channels
+        progress = min(1.0, elapsed / total_duration)
+
+        width = int(self.canvas["width"])
+        x = int(progress * width)
+
+        self.canvas.delete("cursor")
+        self.canvas.create_line(x, 0, x, int(self.canvas["height"]), fill="red", tags="cursor")
+
+        if progress < 1.0:
+            self.root.after(30, self.update_cursor)
+        else:
+            self.playing = False
+            self.play_start_time = 0
+            self.pause_time = 0
