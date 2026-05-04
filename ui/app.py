@@ -189,22 +189,43 @@ class AudioApp:
             return
 
         samples = self.audio.samples
+        channels = self.audio.num_channels
 
         width = int(self.canvas["width"])
         height = int(self.canvas["height"])
         mid_y = height // 2
         step = max(1, len(samples) // width)
 
+        def get_sample(i, channel):
+            index = i * channels + channel
+
+            if index >= len(samples):
+                return 0
+
+            return samples[index]
+
         for x in range(width):
-            idx = x * step
-            if idx >= len(samples):
-                break
+            i = x * step
 
-            sample = samples[idx]
+            if channels == 1:
+                sample = samples[i] if i < len(samples) else 0
 
-            # normalize (-32768..32767 -> -1..1)
-            norm = sample / 32768
+                # normalize (-32768..32767 -> -1..1)
+                norm = sample / 32768
 
-            y = int(mid_y - norm * mid_y)
+                y = int(mid_y - norm * mid_y)
 
-            self.canvas.create_line(x, mid_y, x, y, fill="lime")
+                self.canvas.create_line(x, mid_y, x, y, fill="lime")
+            else:
+                left = get_sample(i, 0)
+                norm_l = left / 32768
+                y_l = int((mid_y // 2) - norm_l * (mid_y // 2))
+
+                self.canvas.create_line(x, mid_y // 2, x, y_l, fill="cyan")
+
+                right = get_sample(i, 1)
+                norm_r = right / 32768
+                base = mid_y + (mid_y // 2)
+                y_r = int(base - norm_r * (mid_y // 2))
+
+                self.canvas.create_line(x, base, x, y_r, fill="orange")
