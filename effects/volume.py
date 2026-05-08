@@ -8,6 +8,6 @@ def volume(audio: Audio, context: EffectContext=None, factor: float = 1.0):
     new_samples = []
 
     for sample in audio.samples:
-        new_samples.append(clamp(int(sample * factor)))
+        new_samples.append(clamp(sample * factor))
 
     return Audio(new_samples, audio.sample_rate, audio.num_channels, audio.sample_width)

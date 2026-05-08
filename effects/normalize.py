@@ -13,16 +13,13 @@ def normalize_preprocess(audio, **kwargs):
     if not audio.samples:
         raise ValueError(f"This audio has no samples: {audio.samples}")
 
-    if audio.sample_width not in (1, 2):
-        raise ValueError(f"Invalid sample width: {audio.sample_width}")
-
     max_val = max(abs(s) for s in audio.samples)
-    target = 32767
+    target = 1.0
 
     return NormalizeContext(factor = target / max_val if max_val != 0 else 1)
 
 @register_effect("normalize", mode=ProcessingMode.PARALLEL, preprocess=normalize_preprocess)
 def normalize(audio: Audio, context: NormalizeContext=None):
-    new_samples = [clamp(int(s * context.factor)) for s in audio.samples]
+    new_samples = [clamp(s * context.factor) for s in audio.samples]
 
     return Audio(new_samples, audio.sample_rate, audio.num_channels, audio.sample_width)

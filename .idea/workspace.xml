@@ -4,13 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3f84d51c-af6e-4afe-8568-4753683d8dde" name="Changes" comment="Added playback function">
+    <list default="true" id="3f84d51c-af6e-4afe-8568-4753683d8dde" name="Changes" comment="Added pausing and resuming audio&#10;Added progress line on waveform&#10;Fixed bugs with channels merging&#10;Improved echo effect">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/audio.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/audio.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/wav.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/wav.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/effects/echo.py" beforeDir="false" afterPath="$PROJECT_DIR$/effects/echo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/effects/reverse.py" beforeDir="false" afterPath="$PROJECT_DIR$/effects/reverse.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/processing/parallel.py" beforeDir="false" afterPath="$PROJECT_DIR$/processing/parallel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/effects/normalize.py" beforeDir="false" afterPath="$PROJECT_DIR$/effects/normalize.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/effects/volume.py" beforeDir="false" afterPath="$PROJECT_DIR$/effects/volume.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ui/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui/app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -19,7 +19,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="36" />
+    <option name="cachedIndexableFilesCount" value="37" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -227,7 +227,15 @@
       <option name="project" value="LOCAL" />
       <updated>1777903369181</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Added pausing and resuming audio&#10;Added progress line on waveform&#10;Fixed bugs with channels merging&#10;Improved echo effect">
+      <option name="closed" value="true" />
+      <created>1777929987932</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1777929987932</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -257,6 +265,7 @@
     <MESSAGE value="Added simple waveform display" />
     <MESSAGE value="Added stereo handling" />
     <MESSAGE value="Added playback function" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added playback function" />
+    <MESSAGE value="Added pausing and resuming audio&#10;Added progress line on waveform&#10;Fixed bugs with channels merging&#10;Improved echo effect" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added pausing and resuming audio&#10;Added progress line on waveform&#10;Fixed bugs with channels merging&#10;Improved echo effect" />
   </component>
 </project>

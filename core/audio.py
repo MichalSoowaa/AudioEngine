@@ -8,11 +8,11 @@ class Audio:
     def copy(self):
         return Audio(self.samples.copy(), self.sample_rate, self.num_channels, self.sample_width)
 
-INT16_MIN = -32768
-INT16_MAX = 32767
+INT_MIN = -1.0
+INT_MAX = 1.0
 
-def clamp(value: int) -> int:
-    return max(INT16_MIN, min(INT16_MAX, value))
+def clamp(value: int) -> float:
+    return max(INT_MIN, min(INT_MAX, value))
 
 def split_channels(audio: Audio):
     if audio.num_channels == 1:

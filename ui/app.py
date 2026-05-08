@@ -228,42 +228,35 @@ class AudioApp:
             if channels == 1:
                 sample = samples[i] if i < len(samples) else 0
 
-                # normalize (-32768..32767 -> -1..1)
-                norm = sample / 32768
-
-                y = int(mid_y - norm * mid_y)
+                y = int(mid_y - sample * mid_y)
 
                 self.canvas.create_line(x, mid_y, x, y, fill="lime", tags="waveform")
             else:
                 left = get_sample(i, 0)
-                norm_l = left / 32768
-                y_l = int((mid_y // 2) - norm_l * (mid_y // 2))
+                y_l = int((mid_y // 2) - left * (mid_y // 2))
 
                 self.canvas.create_line(x, mid_y // 2, x, y_l, fill="cyan", tags="waveform")
 
                 right = get_sample(i, 1)
-                norm_r = right / 32768
                 base = mid_y + (mid_y // 2)
-                y_r = int(base - norm_r * (mid_y // 2))
+                y_r = int(base - right * (mid_y // 2))
 
                 self.canvas.create_line(x, base, x, y_r, fill="orange", tags="waveform")
 
     def audio_to_numpy(self):
-        samples = self.audio.samples
-        channels = self.audio.num_channels
-        arr = np.array(samples, dtype=np.int16)
+        arr = np.array(self.audio.samples, dtype=np.float32)
 
-        if channels == 1:
+        if self.audio.num_channels == 1:
             return arr
 
-        return arr.reshape(-1, channels)
+        return arr.reshape(-1, self.audio.num_channels)
 
     def play_audio(self):
         if not self.audio:
             return
 
         data = self.audio_to_numpy()
-        data = data.astype(np.float32) / 32768.0
+        data = data.astype(np.float32)
 
         self.playing = True
         self.paused = False
@@ -294,7 +287,7 @@ class AudioApp:
         elapsed = self.pause_time - self.play_start_time
 
         data = self.audio_to_numpy()
-        data = data.astype(np.float32) / 32768.0
+        data = data.astype(np.float32)
 
         start_sample = int(elapsed * self.audio.sample_rate)
         sliced = data[start_sample:]

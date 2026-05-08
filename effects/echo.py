@@ -19,6 +19,6 @@ def echo(audio: Audio, context: EchoContext=None, delay_ms: int=300, decay: floa
     new_samples  = audio.samples.copy()
 
     for i in range(delay_samples, len(audio.samples)):
-        new_samples[i] = clamp(audio.samples[i] + int(decay * new_samples[i - delay_samples]))
+        new_samples[i] = clamp(audio.samples[i] + decay  * new_samples[i - delay_samples])
 
     return Audio(new_samples, audio.sample_rate, audio.num_channels, audio.sample_width)
