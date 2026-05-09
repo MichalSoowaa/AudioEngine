@@ -15,7 +15,7 @@ class AudioApp:
         self.root = root
         self.root.title("Audio Editor")
         self.audio = None
-        self.selected_effect = None
+        self.audio_data = None
         self.param_widgets = {}
 
         self.playing = False
@@ -29,40 +29,40 @@ class AudioApp:
         self.build_ui()
 
     def build_ui(self):
-        frame_top = tk.Frame(self.root)
-        frame_top.pack(pady=5)
+        top_bar = tk.Frame(self.root)
+        top_bar.grid(row=0, column=0, sticky="ew")
+        top_bar.columnconfigure(1, weight=1)
 
-        tk.Button(frame_top, text="Load", command=self.load_file).pack(side=tk.LEFT)
-        tk.Button(frame_top, text="Save", command=self.save_file).pack(side=tk.LEFT)
+        left_controls = tk.Frame(top_bar)
+        left_controls.grid(row=0, column=0, sticky="w")
+        tk.Button(left_controls, text="Load", command=self.load_file).pack(side=tk.LEFT)
+        tk.Button(left_controls, text="Save", command=self.save_file).pack(side=tk.LEFT)
+        effects_button = tk.Menubutton(top_bar, text="Effects ▼")
+        effects_menu = tk.Menu(effects_button, tearoff=False)
+        effects_button.config(menu=effects_menu)
+        effects_button.grid(row=0, column=2)
 
-        self.effects_frame = tk.Frame(self.root)
-        self.effects_frame.pack()
+        for effect_name in list_effects():
+            effects_menu.add_command(label=effect_name, command=lambda e=effect_name: self.open_effect_dialog(e))
 
-        tk.Label(self.effects_frame, text="Effects").pack()
+        transport_bar = tk.Frame(self.root)
+        transport_bar.grid(row=1, column=0, pady=5)
+        self.play_pause_button = (tk.Button(transport_bar, text="▶ Play", width=12, command=self.toggle_play_pause))
+        self.play_pause_button.pack(side=tk.LEFT, padx=5)
+        self.stop_button = tk.Button(transport_bar, text="■ Stop", width=12, command=self.stop_audio, state="disabled")
+        self.stop_button.pack(side=tk.LEFT, padx=5)
 
-        for effect in list_effects():
-            btn = tk.Button(self.effects_frame, text=effect, command=lambda e=effect: self.select_effect(e))
-            btn.pack(fill="x")
+        self.status_bar = tk.Frame(self.root, relief=tk.SUNKEN, borderwidth=1)
+        self.status_bar.grid(row=4, column=0, sticky="ew")
+        self.status_var = tk.StringVar(value="Ready")
+        self.status_label = tk.Label(self.status_bar, textvariable=self.status_var, anchor="w")
+        self.status_label.pack(fill=tk.X)
 
-        self.params_frame = tk.Frame(self.root)
-        self.params_frame.pack()
+        self.canvas = tk.Canvas(self.root, width=800, height=300, bg="black")
+        self.canvas.grid(row=2, column=0, sticky="nsew")
 
-        self.apply_button = tk.Button(self.root, text="Apply effect", command=self.apply_effect)
-        self.apply_button.pack()
-
-        self.play_button = (tk.Button(frame_top, text="Play", command=self.play_audio))
-        self.play_button.pack(side=tk.LEFT)
-
-        tk.Button(frame_top, text="Stop", command=self.stop_audio).pack(side=tk.LEFT)
-
-        tk.Button(frame_top, text="Resume", command=self.resume_audio).pack(side=tk.LEFT)
-        tk.Button(frame_top, text="Pause", command=self.pause_audio).pack(side=tk.LEFT)
-
-        self.status = tk.Label(self.root, text="Ready")
-        self.status.pack()
-
-        self.canvas = tk.Canvas(self.root, width=800, height=200, bg="black")
-        self.canvas.pack(pady=10)
+        self.root.rowconfigure(2, weight=1)
+        self.root.columnconfigure(0, weight=1)
 
     def load_file(self):
         path = filedialog.askopenfilename(filetypes=[("WAV files", "*.wav")])
@@ -71,9 +71,10 @@ class AudioApp:
             return
 
         self.audio = load_wav(path)
+        self.rebuild_cache()
         self.draw_waveform()
-        self.status.config(text=f"Loaded: {path}")
-        self.play_button.config(state="normal")
+        self.status_var.set(f"Loaded: {path} | {self.audio.sample_rate} Hz | {self.audio.num_channels} channels")
+        self.play_pause_button.config(state="normal")
 
     def save_file(self):
         if not self.audio:
@@ -85,22 +86,26 @@ class AudioApp:
             return
 
         save_wav(path, self.audio)
-        self.status.config(text=f"Saved: {path}")
+        self.status_var.set(f"Saved: {path}")
 
-    def select_effect(self, effect):
-        self.selected_effect = effect
-        self.build_params(effect)
+    def open_effect_dialog(self, effect_name):
+        self.dialog = tk.Toplevel(self.root)
+        self.dialog.title(effect_name.capitalize())
+        self.dialog.geometry("300x200")
+        self.dialog.resizable(False, False)
 
-    def build_params(self, effect):
-        for widget in self.params_frame.winfo_children():
-            widget.destroy()
+        params_frame = tk.Frame(self.dialog)
+        params_frame.pack(padx=10, pady=10)
 
-        self.param_widgets.clear()
+        self.build_params(params_frame, effect_name)
 
+        tk.Button(self.dialog, text="Apply effect", command=lambda: self.apply_effect(effect_name, self.dialog)).pack(pady=10)
+
+    def build_params(self, parent, effect):
         params = get_effect_params(effect)
 
         for name, meta in params.items():
-            frame = tk.Frame(self.params_frame)
+            frame = tk.Frame(parent)
             frame.pack(anchor="w", pady=2)
             label_text = name
 
@@ -128,13 +133,9 @@ class AudioApp:
 
             self.param_widgets[name] = (widget, var, meta)
 
-    def apply_effect(self):
+    def apply_effect(self, effect, dialog):
         if not self.audio:
             messagebox.showerror("Error", "No audio loaded")
-            return
-
-        if not self.selected_effect:
-            messagebox.showerror("Error", "No effect selected")
             return
 
         params = {}
@@ -163,19 +164,20 @@ class AudioApp:
             messagebox.showerror("Invalid input", str(e))
             return
 
-        self.status.config(text="Processing...")
+        self.status_var.set("Processing...")
 
-        chain = [(self.selected_effect, params)]
+        chain = [(effect, params)]
         #self.audio = apply_chain(self.audio, chain, parallel=True)
         thread = threading.Thread(
             target = self.process_audio,
             args = (self.audio, chain),
             daemon = True
         )
-        self.apply_button.config(state="disabled")
         thread.start()
 
         self.root.after(100, self.check_queue)
+
+        dialog.destroy()
 
     def process_audio(self, audio, chain):
         try:
@@ -190,12 +192,11 @@ class AudioApp:
 
             if status == "success":
                 self.audio = data
+                self.rebuild_cache()
                 self.draw_waveform()
-                self.status.config(text="Done")
-                self.apply_button.config(state="normal")
+                self.status_var.set("Effect applied successfully")
             elif status == "error":
-                self.status.config(text="Error")
-                self.apply_button.config(state="normal")
+                self.status_var.set("Error")
                 messagebox.showerror("Error", data)
         except queue.Empty:
             self.root.after(100, self.check_queue)
@@ -243,32 +244,50 @@ class AudioApp:
 
                 self.canvas.create_line(x, base, x, y_r, fill="orange", tags="waveform")
 
-    def audio_to_numpy(self):
+    def rebuild_cache(self):
+        if not self.audio:
+            self.audio_data = None
+            return
+
         arr = np.array(self.audio.samples, dtype=np.float32)
 
-        if self.audio.num_channels == 1:
-            return arr
+        if self.audio.num_channels > 1:
+            arr = arr.reshape(-1, self.audio.num_channels)
 
-        return arr.reshape(-1, self.audio.num_channels)
+        self.audio_data = arr
 
-    def play_audio(self):
+    def toggle_play_pause(self):
         if not self.audio:
             return
 
-        data = self.audio_to_numpy()
-        data = data.astype(np.float32)
+        if self.paused:
+            self.resume_audio()
+        elif self.playing:
+            self.pause_audio()
+        else:
+            self.play_audio()
 
+    def play_audio(self):
+        sd.play(self.audio_data, samplerate=self.audio.sample_rate)
+
+        self.play_start_time = time.time()
         self.playing = True
         self.paused = False
-        self.play_start_time = time.time()
+        self.pause_time = 0
+        self.play_pause_button.config(text="⏸ Pause")
+        self.stop_button.config(state="normal")
 
-        sd.play(data, samplerate=self.audio.sample_rate)
         self.update_cursor()
 
     def stop_audio(self):
         sd.stop()
         self.playing = False
         self.paused = False
+        self.play_start_time = 0
+        self.pause_time = 0
+        self.play_pause_button.config(text="▶ Play")
+        self.stop_button.config(state="disabled")
+        self.canvas.delete("cursor")
 
     def pause_audio(self):
         if not self.playing or self.paused:
@@ -277,8 +296,10 @@ class AudioApp:
         latency = sd.query_devices(sd.default.device['output'], 'output')['default_low_output_latency']
 
         sd.stop()
+        self.playing = False
         self.paused = True
-        self.pause_time = time.time() - latency
+        self.pause_time = time.time() + latency
+        self.play_pause_button.config(text="▶ Resume")
 
     def resume_audio(self):
         if not self.paused:
@@ -286,15 +307,14 @@ class AudioApp:
 
         elapsed = self.pause_time - self.play_start_time
 
-        data = self.audio_to_numpy()
-        data = data.astype(np.float32)
-
         start_sample = int(elapsed * self.audio.sample_rate)
-        sliced = data[start_sample:]
+        sliced = self.audio_data[start_sample:]
 
         sd.play(sliced, samplerate=self.audio.sample_rate)
         self.play_start_time = time.time() - elapsed
+        self.playing = True
         self.paused = False
+        self.play_pause_button.config(text="⏸ Pause")
 
         self.update_cursor()
 
@@ -316,5 +336,9 @@ class AudioApp:
             self.root.after(30, self.update_cursor)
         else:
             self.playing = False
+            self.paused = False
             self.play_start_time = 0
             self.pause_time = 0
+
+            self.play_pause_button.config(text="▶ Play")
+            self.stop_button.config(state="disabled")
