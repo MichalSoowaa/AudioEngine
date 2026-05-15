@@ -1,5 +1,6 @@
 from effects.registry import get_effect
-from processing.parallel import apply_effect_parallel
+from core.audio import Audio, split_channels, merge_channels
+from processing.strategies import PROCESSING_STRATEGIES
 
 def apply_effect(audio, effect, parallel=True, **user_params):
     effect_data = get_effect(effect)
@@ -7,17 +8,27 @@ def apply_effect(audio, effect, parallel=True, **user_params):
     if not effect_data:
         raise ValueError(f"Effect '{effect}' not found")
 
-    if not parallel:
-        func = effect_data["func"]
-        preprocess = effect_data["preprocess"]
-        effect_context = None
+    # if not parallel:
+    #     func = effect_data["func"]
+    #     preprocess = effect_data["preprocess"]
+    #     effect_context = None
+    #
+    #     if preprocess:
+    #         effect_context = preprocess(audio, **user_params)
+    #
+    #     return func(audio, effect_context, **user_params)
 
-        if preprocess:
-            effect_context = preprocess(audio, **user_params)
+    channels = split_channels(audio)
+    processed_channels = []
 
-        return func(audio, effect_context, **user_params)
+    for samples in channels:
+        ch_audio = Audio(samples, audio.sample_rate, 1, audio.sample_width)
+        processed = apply_effect_single_channel(ch_audio, effect_data, parallel, **user_params)
+        processed_channels.append(processed.samples)
 
-    return apply_effect_parallel(audio, effect_data, **user_params)
+    merged = merge_channels(processed_channels)
+
+    return Audio(merged, audio.sample_rate, audio.num_channels, audio.sample_width)
 
 def apply_chain(audio, chain, parallel=True):
     """
@@ -33,3 +44,17 @@ def apply_chain(audio, chain, parallel=True):
         result = apply_effect(result, effect, parallel, **user_params)
 
     return result
+
+def apply_effect_single_channel(audio, effect_data, parallel, **user_params):
+    mode = effect_data["mode"]
+    func = effect_data["func"]
+    preprocess = effect_data["preprocess"]
+
+    context = None
+
+    if preprocess:
+        context = preprocess(audio, **user_params)
+
+    strategy = PROCESSING_STRATEGIES[mode]
+
+    return strategy.apply(audio, func, context, parallel, user_params)

@@ -23,6 +23,8 @@ def get_effect(name):
 def list_effects():
     return list(EFFECTS.keys())
 
+INFRASTRUCTURE_PARAMS = {"audio", "frames", "context"}
+
 def get_effect_params(name):
     effect = EFFECTS.get(name)
 
@@ -35,12 +37,19 @@ def get_effect_params(name):
     params = {}
 
     for param in sig.parameters.values():
+
+        if param.name in INFRASTRUCTURE_PARAMS:
+            continue
+
         if param.annotation is Audio:
             continue
 
         if (param.annotation is not inspect.Parameter.empty
         and inspect.isclass(param.annotation)
         and issubclass(param.annotation, EffectContext)):
+            continue
+
+        if isinstance(param.default, EffectContext):
             continue
 
         default = None

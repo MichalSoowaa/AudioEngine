@@ -4,13 +4,27 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3f84d51c-af6e-4afe-8568-4753683d8dde" name="Changes" comment="Added pausing and resuming audio&#10;Added progress line on waveform&#10;Fixed bugs with channels merging&#10;Improved echo effect">
+    <list default="true" id="3f84d51c-af6e-4afe-8568-4753683d8dde" name="Changes" comment="UI upgraded">
+      <change afterPath="$PROJECT_DIR$/effects/distortion.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/effects/equalizer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/effects/exciter.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/effects/spectral_blur.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/effects/spectral_gate.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/effects/tremolo.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/processing/runner.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/processing/strategies/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/processing/strategies/base.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/processing/strategies/block_strategy.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/processing/strategies/frame_strategy.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/processing/strategies/normal_strategy.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/processing/strategies/parallel_strategy.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/audio.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/audio.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/wav.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/wav.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/effects/echo.py" beforeDir="false" afterPath="$PROJECT_DIR$/effects/echo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/effects/normalize.py" beforeDir="false" afterPath="$PROJECT_DIR$/effects/normalize.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/effects/volume.py" beforeDir="false" afterPath="$PROJECT_DIR$/effects/volume.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/enums.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/enums.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/effects/normalize.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/effects/registry.py" beforeDir="false" afterPath="$PROJECT_DIR$/effects/registry.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/processing/parallel.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/processing/pipeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/processing/pipeline.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ui/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui/app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -19,7 +33,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="37" />
+    <option name="cachedIndexableFilesCount" value="51" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -235,7 +249,23 @@
       <option name="project" value="LOCAL" />
       <updated>1777929987932</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Added handling 24 and 32-bit wav files">
+      <option name="closed" value="true" />
+      <created>1778253345748</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1778253345748</updated>
+    </task>
+    <task id="LOCAL-00015" summary="UI upgraded">
+      <option name="closed" value="true" />
+      <created>1778363497095</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1778363497095</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -266,6 +296,8 @@
     <MESSAGE value="Added stereo handling" />
     <MESSAGE value="Added playback function" />
     <MESSAGE value="Added pausing and resuming audio&#10;Added progress line on waveform&#10;Fixed bugs with channels merging&#10;Improved echo effect" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added pausing and resuming audio&#10;Added progress line on waveform&#10;Fixed bugs with channels merging&#10;Improved echo effect" />
+    <MESSAGE value="Added handling 24 and 32-bit wav files" />
+    <MESSAGE value="UI upgraded" />
+    <option name="LAST_COMMIT_MESSAGE" value="UI upgraded" />
   </component>
 </project>

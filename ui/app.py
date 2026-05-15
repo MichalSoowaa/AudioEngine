@@ -13,7 +13,7 @@ import time
 class AudioApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Audio Editor")
+        self.root.title("Audio Processor")
         self.audio = None
         self.audio_data = None
         self.param_widgets = {}
@@ -91,7 +91,7 @@ class AudioApp:
     def open_effect_dialog(self, effect_name):
         self.dialog = tk.Toplevel(self.root)
         self.dialog.title(effect_name.capitalize())
-        self.dialog.geometry("300x200")
+        self.dialog.geometry("500x400")
         self.dialog.resizable(False, False)
 
         params_frame = tk.Frame(self.dialog)
@@ -102,6 +102,7 @@ class AudioApp:
         tk.Button(self.dialog, text="Apply effect", command=lambda: self.apply_effect(effect_name, self.dialog)).pack(pady=10)
 
     def build_params(self, parent, effect):
+        self.param_widgets.clear()
         params = get_effect_params(effect)
 
         for name, meta in params.items():
@@ -165,6 +166,7 @@ class AudioApp:
             return
 
         self.status_var.set("Processing...")
+        self.play_pause_button.configure(state="disabled")
 
         chain = [(effect, params)]
         #self.audio = apply_chain(self.audio, chain, parallel=True)
@@ -181,7 +183,14 @@ class AudioApp:
 
     def process_audio(self, audio, chain):
         try:
+            start = time.perf_counter()
             result = apply_chain(audio, chain, parallel=True)
+            end = time.perf_counter()
+            duration = end - start
+            effect_name = chain[0][0]
+
+            print(f"[EFFECT: {effect_name}] [TIME: {duration:.4f}]")
+
             self.queue.put(("success", result))
         except Exception as e:
             self.queue.put(("error", str(e)))
@@ -195,6 +204,7 @@ class AudioApp:
                 self.rebuild_cache()
                 self.draw_waveform()
                 self.status_var.set("Effect applied successfully")
+                self.play_pause_button.configure(state="normal")
             elif status == "error":
                 self.status_var.set("Error")
                 messagebox.showerror("Error", data)
